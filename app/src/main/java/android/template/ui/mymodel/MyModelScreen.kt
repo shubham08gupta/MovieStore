@@ -23,7 +23,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -38,14 +43,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun MyModelScreen(modifier: Modifier = Modifier, viewModel: MyModelViewModel = hiltViewModel()) {
-    val items by viewModel.uiState.collectAsStateWithLifecycle()
-    if (items is MyModelUiState.Success) {
-        MyModelScreen(
-            items = (items as MyModelUiState.Success).data,
-            onSave = viewModel::addMyModel,
-            modifier = modifier
-        )
+fun MyModelScreen(
+    modifier: Modifier = Modifier,
+    viewModel: MyModelViewModel = hiltViewModel(),
+    onAddNewMovie: () -> Unit
+) {
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { onAddNewMovie() }) {
+                Icon(Icons.Filled.Add, "Floating action button.")
+            }
+        }
+    ) {
+        val items by viewModel.uiState.collectAsStateWithLifecycle()
+        if (items is MyModelUiState.Success) {
+            MyModelScreen(
+                items = (items as MyModelUiState.Success).data,
+                onSave = viewModel::addMyModel,
+                modifier = modifier.padding(it)
+            )
+        }
     }
 }
 
@@ -58,7 +75,9 @@ internal fun MyModelScreen(
     Column(modifier) {
         var nameMyModel by remember { mutableStateOf("Compose") }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             TextField(

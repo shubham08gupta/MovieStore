@@ -16,6 +16,7 @@
 
 package android.template.ui
 
+import android.template.ui.addeditmovietask.AddEditMovieScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,13 +25,34 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import android.template.ui.mymodel.MyModelScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "main") {
-        composable("main") { MyModelScreen(modifier = Modifier.padding(16.dp)) }
-        // TODO: Add more destinations
+        composable("main") {
+            MyModelScreen(modifier = Modifier.padding(16.dp), onAddNewMovie = {
+                navController.navigate("detail/-1")
+            })
+        }
+        composable(
+            "detail/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.IntType
+                    defaultValue = -1
+                    nullable = false
+                },
+            )
+        ) { entry ->
+            val id = entry.arguments?.getInt("id")
+            AddEditMovieScreen(
+                movieId = id ?: -1,
+                onBack = { navController.navigateUp() }
+            )
+        }
     }
 }

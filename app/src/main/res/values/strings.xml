@@ -16,4 +16,6 @@
 
 <resources>
     <string name="app_name">MyApplication</string>
+    <string name="menu_back">Back</string>
+    <string name="menu_save">Save</string>
 </resources>
