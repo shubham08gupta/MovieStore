@@ -16,26 +16,29 @@
 
 package android.template.data
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import android.template.data.local.database.MyModel
+import android.template.data.local.database.Movie
 import android.template.data.local.database.MyModelDao
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-interface MyModelRepository {
-    val myModels: Flow<List<String>>
+interface MovieRepository {
+    val myModels: Flow<List<Movie>>
+    suspend fun add(movie: Movie)
 
-    suspend fun add(name: String)
+    suspend fun getMovieById(id: Int): Movie
 }
 
-class DefaultMyModelRepository @Inject constructor(
+class DefaultMovieRepository @Inject constructor(
     private val myModelDao: MyModelDao
-) : MyModelRepository {
+) : MovieRepository {
 
-    override val myModels: Flow<List<String>> =
-        myModelDao.getMyModels().map { items -> items.map { it.name } }
+    override val myModels: Flow<List<Movie>> = myModelDao.getAllMoviesFlow()
 
-    override suspend fun add(name: String) {
-        myModelDao.insertMyModel(MyModel(name = name))
+    override suspend fun add(movie: Movie) {
+        myModelDao.insertMovie(movie)
+    }
+
+    override suspend fun getMovieById(id: Int): Movie {
+        return myModelDao.getMovieById(id)
     }
 }

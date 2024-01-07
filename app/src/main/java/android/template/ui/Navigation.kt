@@ -36,6 +36,8 @@ fun MainNavigation() {
         composable("main") {
             MyModelScreen(modifier = Modifier.padding(16.dp), onAddNewMovie = {
                 navController.navigate("detail/-1")
+            }, onMovieClicked = {
+                navController.navigate("detail/${it.id}")
             })
         }
         composable(
@@ -50,7 +52,11 @@ fun MainNavigation() {
         ) { entry ->
             val id = entry.arguments?.getInt("id")
             AddEditMovieScreen(
-                movieId = id ?: -1,
+                toolbarTitle = if (id == -1 || id == null) {
+                    "Add a movie"
+                } else {
+                    "Edit the movie"
+                },
                 onBack = { navController.navigateUp() }
             )
         }

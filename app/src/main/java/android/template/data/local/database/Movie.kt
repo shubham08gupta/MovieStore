@@ -16,6 +16,7 @@
 
 package android.template.data.local.database
 
+import androidx.annotation.IntRange
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Insert
@@ -24,18 +25,26 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Entity
-data class MyModel(
-    val name: String
+data class Movie(
+    val name: String,
+    val desc: String = "",
+    @IntRange(
+        from = 0, to = 10
+    )
+    val rating: Int = 0
 ) {
     @PrimaryKey(autoGenerate = true)
-    var uid: Int = 0
+    var id: Int = 0
 }
 
 @Dao
 interface MyModelDao {
-    @Query("SELECT * FROM mymodel ORDER BY uid DESC LIMIT 10")
-    fun getMyModels(): Flow<List<MyModel>>
+    @Query("SELECT * FROM movie ORDER BY id DESC")
+    fun getAllMoviesFlow(): Flow<List<Movie>>
+
+    @Query("SELECT * FROM movie WHERE id IS :id")
+    suspend fun getMovieById(id: Int): Movie
 
     @Insert
-    suspend fun insertMyModel(item: MyModel)
+    suspend fun insertMovie(item: Movie)
 }

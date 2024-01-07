@@ -16,14 +16,15 @@
 
 package android.template.data.di
 
+import android.template.data.DefaultMovieRepository
+import android.template.data.MovieRepository
+import android.template.data.local.database.Movie
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import android.template.data.MyModelRepository
-import android.template.data.DefaultMyModelRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,16 +35,35 @@ interface DataModule {
     @Singleton
     @Binds
     fun bindsMyModelRepository(
-        myModelRepository: DefaultMyModelRepository
-    ): MyModelRepository
+        myModelRepository: DefaultMovieRepository
+    ): MovieRepository
 }
 
-class FakeMyModelRepository @Inject constructor() : MyModelRepository {
-    override val myModels: Flow<List<String>> = flowOf(fakeMyModels)
+class FakeMovieRepository @Inject constructor() : MovieRepository {
+    override val myModels: Flow<List<Movie>> = flowOf(fakeMyModels)
+    override suspend fun add(movie: Movie) {
+        fakeMyModels.add(movie)
+    }
 
-    override suspend fun add(name: String) {
-        throw NotImplementedError()
+    override suspend fun getMovieById(id: Int): Movie {
+        return fakeMyModels.first { it.id == id }
     }
 }
 
-val fakeMyModels = listOf("One", "Two", "Three")
+val fakeMyModels = mutableListOf(
+    Movie(
+        name = "The Dictator",
+        desc = "Best comedy movie",
+        rating = 10
+    ),
+    Movie(
+        name = "Kho gaye hum kaha",
+        desc = "Really nice Indian movie",
+        rating = 9
+    ),
+    Movie(
+        name = "Parasite",
+        desc = "Oscar winning South Korean movie",
+        rating = 10
+    ),
+)

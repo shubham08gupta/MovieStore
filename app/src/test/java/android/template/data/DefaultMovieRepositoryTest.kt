@@ -23,20 +23,21 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import android.template.data.local.database.MyModel
+import android.template.data.local.database.Movie
 import android.template.data.local.database.MyModelDao
+import android.template.ui.mymodel.fakeMovies
 
 /**
- * Unit tests for [DefaultMyModelRepository].
+ * Unit tests for [DefaultMovieRepository].
  */
 @OptIn(ExperimentalCoroutinesApi::class) // TODO: Remove when stable
-class DefaultMyModelRepositoryTest {
+class DefaultMovieRepositoryTest {
 
     @Test
     fun myModels_newItemSaved_itemIsReturned() = runTest {
-        val repository = DefaultMyModelRepository(FakeMyModelDao())
+        val repository = DefaultMovieRepository(FakeMyModelDao())
 
-        repository.add("Repository")
+        repository.add(fakeMovies.first())
 
         assertEquals(repository.myModels.first().size, 1)
     }
@@ -45,13 +46,17 @@ class DefaultMyModelRepositoryTest {
 
 private class FakeMyModelDao : MyModelDao {
 
-    private val data = mutableListOf<MyModel>()
+    private val data = mutableListOf<Movie>()
 
-    override fun getMyModels(): Flow<List<MyModel>> = flow {
+    override fun getAllMoviesFlow(): Flow<List<Movie>> = flow {
         emit(data)
     }
 
-    override suspend fun insertMyModel(item: MyModel) {
+    override suspend fun getMovieById(id: Int): Movie {
+        return data.first { it.id == id }
+    }
+
+    override suspend fun insertMovie(item: Movie) {
         data.add(0, item)
     }
 }
