@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -34,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,13 +53,13 @@ fun MyModelScreen(
         FloatingActionButton(onClick = { onAddNewMovie() }) {
             Icon(Icons.Filled.Add, "Floating action button.")
         }
-    }) {
+    }) { paddingValues ->
         val items by viewModel.uiState.collectAsStateWithLifecycle()
         if (items is MyModelUiState.Success) {
             MyModelScreen(
-                items = (items as MyModelUiState.Success).data,
+                movies = (items as MyModelUiState.Success).data,
                 onMovieClicked = { onMovieClicked(it) },
-                modifier = modifier.padding(it)
+                modifier = modifier.padding(paddingValues)
             )
         }
     }
@@ -65,21 +68,29 @@ fun MyModelScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MyModelScreen(
-    items: List<Movie>, onMovieClicked: (name: Movie) -> Unit, modifier: Modifier = Modifier
+    movies: List<Movie>, onMovieClicked: (name: Movie) -> Unit, modifier: Modifier = Modifier
 ) {
-    items.forEach { movie ->
-        Card(
-            onClick = { onMovieClicked(movie) },
-            modifier = modifier
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+    LazyColumn(
+        modifier = modifier
+    ) {
+        items(movies, key = { it.id }) { movie ->
+            Card(
+                onClick = { onMovieClicked(movie) },
+                modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                Text(text = movie.name, modifier = Modifier.fillMaxWidth())
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = movie.desc, modifier = Modifier.fillMaxWidth())
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "${movie.rating}/10", modifier = Modifier.fillMaxWidth())
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = movie.name,
+                        modifier = Modifier.fillMaxWidth(),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = movie.desc, modifier = Modifier.fillMaxWidth())
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "${movie.rating}/10", modifier = Modifier.fillMaxWidth())
+                }
             }
         }
     }

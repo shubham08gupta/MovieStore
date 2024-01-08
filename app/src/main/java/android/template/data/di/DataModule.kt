@@ -40,7 +40,7 @@ interface DataModule {
 }
 
 class FakeMovieRepository @Inject constructor() : MovieRepository {
-    override val myModels: Flow<List<Movie>> = flowOf(fakeMyModels)
+    override val moviesFlow: Flow<List<Movie>> = flowOf(fakeMyModels)
     override suspend fun add(movie: Movie) {
         fakeMyModels.add(movie)
     }

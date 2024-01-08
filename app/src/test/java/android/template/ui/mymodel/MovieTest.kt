@@ -51,7 +51,7 @@ private class FakeMovieRepository : MovieRepository {
 
     private val data = mutableListOf<Movie>()
 
-    override val myModels: Flow<List<Movie>>
+    override val moviesFlow: Flow<List<Movie>>
         get() = flow { emit(data.toList()) }
 
     override suspend fun add(movie: Movie) {

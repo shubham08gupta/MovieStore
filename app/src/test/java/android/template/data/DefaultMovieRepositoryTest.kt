@@ -39,7 +39,7 @@ class DefaultMovieRepositoryTest {
 
         repository.add(fakeMovies.first())
 
-        assertEquals(repository.myModels.first().size, 1)
+        assertEquals(repository.moviesFlow.first().size, 1)
     }
 
 }

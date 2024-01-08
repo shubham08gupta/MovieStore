@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface MovieRepository {
-    val myModels: Flow<List<Movie>>
+    val moviesFlow: Flow<List<Movie>>
     suspend fun add(movie: Movie)
 
     suspend fun getMovieById(id: Int): Movie
@@ -32,7 +32,7 @@ class DefaultMovieRepository @Inject constructor(
     private val myModelDao: MyModelDao
 ) : MovieRepository {
 
-    override val myModels: Flow<List<Movie>> = myModelDao.getAllMoviesFlow()
+    override val moviesFlow: Flow<List<Movie>> = myModelDao.getAllMoviesFlow()
 
     override suspend fun add(movie: Movie) {
         myModelDao.insertMovie(movie)
