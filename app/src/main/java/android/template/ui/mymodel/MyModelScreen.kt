@@ -16,9 +16,12 @@
 
 package android.template.ui.mymodel
 
+import android.template.R
 import android.template.data.local.database.Movie
 import android.template.ui.theme.MyApplicationTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,25 +34,34 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyModelScreen(
     modifier: Modifier = Modifier,
@@ -60,6 +72,14 @@ fun MyModelScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
+        topBar = {
+            MoviesTopAppBar(
+                onSortNameAscending = { viewModel.sortMoviesBy(MoviesSortType.SORT_NAME_ASCENDING) },
+                onSortNameDescending = { viewModel.sortMoviesBy(MoviesSortType.SORT_NAME_DESCENDING) },
+                onSortRatingAscending = { viewModel.sortMoviesBy(MoviesSortType.SORT_RATING_ASCENDING) },
+                onSortRatingDescending = { viewModel.sortMoviesBy(MoviesSortType.SORT_RATING_DESCENDING) }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { onAddNewMovie() }) {
                 Icon(Icons.Filled.Add, "Floating action button.")
@@ -125,6 +145,83 @@ internal fun MyModelScreen(
                     Text(text = "${movie.rating}/10", modifier = Modifier.fillMaxWidth())
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MoviesTopAppBar(
+    onSortNameAscending: () -> Unit,
+    onSortNameDescending: () -> Unit,
+    onSortRatingAscending: () -> Unit,
+    onSortRatingDescending: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(text = stringResource(id = R.string.app_name)) },
+        actions = {
+            SortMoviesMenu(
+                onSortNameAscending,
+                onSortNameDescending,
+                onSortRatingAscending,
+                onSortRatingDescending
+            )
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun SortMoviesMenu(
+    onSortNameAscending: () -> Unit,
+    onSortNameDescending: () -> Unit,
+    onSortRatingAscending: () -> Unit,
+    onSortRatingDescending: () -> Unit
+) {
+    TopAppBarDropdownMenu(
+        iconContent = {
+            Icon(
+                painterResource(id = R.drawable.ic_sort_list),
+                stringResource(id = R.string.menu_filter)
+            )
+        }
+    ) { closeMenu ->
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.ascending_name)) },
+            onClick = { onSortNameAscending(); closeMenu() }
+        )
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.descending_name)) },
+            onClick = { onSortNameDescending(); closeMenu() }
+        )
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.ascending_rating)) },
+            onClick = { onSortRatingAscending(); closeMenu() }
+        )
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.descending_rating)) },
+            onClick = { onSortRatingDescending(); closeMenu() }
+        )
+    }
+}
+
+@Composable
+private fun TopAppBarDropdownMenu(
+    iconContent: @Composable () -> Unit,
+    content: @Composable ColumnScope.(() -> Unit) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
+        IconButton(onClick = { expanded = !expanded }) {
+            iconContent()
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+        ) {
+            content { expanded = !expanded }
         }
     }
 }

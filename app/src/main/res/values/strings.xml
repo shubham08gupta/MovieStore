@@ -15,7 +15,12 @@
   -->
 
 <resources>
-    <string name="app_name">MyApplication</string>
+    <string name="app_name">Movie Store</string>
     <string name="menu_back">Back</string>
     <string name="menu_save">Save</string>
+    <string name="menu_filter">Filter</string>
+    <string name="ascending_name">Name: A-Z</string>
+    <string name="descending_name">Name: Z-A</string>
+    <string name="ascending_rating">Rating: 1–10</string>
+    <string name="descending_rating">Rating: 10–1</string>
 </resources>

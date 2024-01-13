@@ -21,26 +21,55 @@ import android.template.data.local.database.Movie
 import android.template.ui.mymodel.MyModelUiState.Error
 import android.template.ui.mymodel.MyModelUiState.Loading
 import android.template.ui.mymodel.MyModelUiState.Success
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class MyModelViewModel @Inject constructor(
-    movieRepository: MovieRepository
+    movieRepository: MovieRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val uiState: StateFlow<MyModelUiState> = movieRepository
-        .moviesFlow.map<List<Movie>, MyModelUiState>(::Success)
+    private val _sortType: StateFlow<MoviesSortType> = savedStateHandle.getStateFlow(
+        MOVIES_SORT_SAVED_STATE_KEY,
+        MoviesSortType.SORT_NAME_ASCENDING
+    )
+
+    val uiState: StateFlow<MyModelUiState> = combine(
+        movieRepository.moviesFlow,
+        _sortType
+    ) { movies: List<Movie>, moviesSortType: MoviesSortType ->
+        when (moviesSortType) {
+            MoviesSortType.SORT_NAME_ASCENDING -> movies.sortedWith(
+                compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+            )
+
+            MoviesSortType.SORT_NAME_DESCENDING -> movies.sortedWith(
+                compareByDescending(String.CASE_INSENSITIVE_ORDER) { it.name }
+            )
+
+            MoviesSortType.SORT_RATING_ASCENDING -> movies.sortedBy { it.rating }
+            MoviesSortType.SORT_RATING_DESCENDING -> movies.sortedByDescending { it.rating }
+        }
+    }.map<List<Movie>, MyModelUiState>(::Success)
         .catch { emit(Error(it)) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
 
+    fun sortMoviesBy(sortType: MoviesSortType) {
+        if (uiState.value !is Success) {
+            return
+        }
+        savedStateHandle[MOVIES_SORT_SAVED_STATE_KEY] = sortType
+    }
 }
 
 sealed interface MyModelUiState {
@@ -48,3 +77,5 @@ sealed interface MyModelUiState {
     data class Error(val throwable: Throwable) : MyModelUiState
     data class Success(val data: List<Movie>) : MyModelUiState
 }
+
+const val MOVIES_SORT_SAVED_STATE_KEY = "MOVIES_SORT_SAVED_STATE_KEY"
