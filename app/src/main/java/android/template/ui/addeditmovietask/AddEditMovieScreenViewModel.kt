@@ -43,7 +43,11 @@ class AddEditMovieScreenViewModel @Inject constructor(
     }
 
     private fun fetchMovieDetails(movieId: Int) = viewModelScope.launch {
-        movieRepo.getMovieById(movieId)
+        with(movieRepo.getMovieById(movieId)) {
+            updateName(name)
+            updateDesc(desc)
+            updateRating(rating)
+        }
     }
 
     private fun saveMovieId() {

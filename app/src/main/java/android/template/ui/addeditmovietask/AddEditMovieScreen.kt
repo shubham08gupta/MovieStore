@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditMovieScreen(
     toolbarTitle: String,
@@ -73,8 +74,8 @@ fun AddEditMovieScreen(
                 placeholder = {
                     Text(text = "Enter movie description")
                 },
-
-                )
+                minLines = 4
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             var expanded by remember { mutableStateOf(false) }
@@ -84,12 +85,13 @@ fun AddEditMovieScreen(
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = it },
-                modifier = Modifier.fillMaxWidth()
             ) {
                 TextField(
                     // The `menuAnchor` modifier must be passed to the text field for correctness.
                     value = viewModel.rating.toString(),
-                    modifier = Modifier.menuAnchor(),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
                     readOnly = true,
                     onValueChange = {},
                     label = {
@@ -119,6 +121,7 @@ fun AddEditMovieScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditMovieTopAppBar(title: String, onBack: () -> Unit, onSave: () -> Unit) {
     TopAppBar(title = { Text(text = title) }, navigationIcon = {
