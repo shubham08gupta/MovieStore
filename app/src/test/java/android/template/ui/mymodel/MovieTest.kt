@@ -17,32 +17,40 @@
 package android.template.ui.mymodel
 
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import android.template.data.MovieRepository
+import android.template.data.local.database.Movie
+import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
-import android.template.data.MovieRepository
-import android.template.data.local.database.Movie
 
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-@OptIn(ExperimentalCoroutinesApi::class) // TODO: Remove when stable
 class MovieTest {
+
+    private val repo: MovieRepository = FakeMovieRepository()
+    private val savedStateHandle = SavedStateHandle()
+    private lateinit var viewModel: MyModelViewModel
+
+    @Before
+    fun setup() {
+        viewModel = MyModelViewModel(repo, savedStateHandle)
+    }
+
     @Test
     fun uiState_initiallyLoading() = runTest {
-        val viewModel = MyModelViewModel(FakeMovieRepository())
         assertEquals(viewModel.uiState.first(), MyModelUiState.Loading)
     }
 
     @Test
     fun uiState_onItemSaved_isDisplayed() = runTest {
-        val viewModel = MyModelViewModel(FakeMovieRepository())
         assertEquals(viewModel.uiState.first(), MyModelUiState.Loading)
     }
 }
@@ -56,7 +64,6 @@ private class FakeMovieRepository : MovieRepository {
 
     override suspend fun add(movie: Movie) {
         data.add(0, movie)
-
     }
 
     override suspend fun getMovieById(id: Int): Movie {

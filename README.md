@@ -1,7 +1,7 @@
-Architecture starter template (single module)
-==================
+# Movie Store
+A space to save all your favourite movies. Rate a movie, sort it by multiple ways, you have the power.
 
-This template is compatible with the latest **stable** version of Android Studio.
+==================
 
 ## Screenshots
 ![Screenshot](https://github.com/android/architecture-templates/raw/main/screenshots.png)
@@ -18,24 +18,7 @@ This template is compatible with the latest **stable** version of Android Studio
 * Unit tests
 * UI tests using fake data with Hilt
 
-## Usage
-
-1. Clone this branch
-
-```
-git clone https://github.com/android/architecture-templates.git --branch base
-```
-
-2. Run the customizer script:
-
-```
-./customizer.sh your.package.name DataItemType [MyApplication]
-```
-
-Where `your.package.name` is your app ID (should be lowercase) and `DataItemType` is used for the
-name of the screen, exposed state and data base entity (should be PascalCase). You can add an optional application name.
-
 # License
 
-Now in Android is distributed under the terms of the Apache License (Version 2.0). See the
+Movie Store is distributed under the terms of the Apache License (Version 2.0). See the
 [license](LICENSE) for more information.
