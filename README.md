@@ -4,7 +4,7 @@ A space to save all your favourite movies. Rate a movie, sort it by multiple way
 ==================
 
 ## Screenshots
-![Screenshot](https://github.com/android/architecture-templates/raw/main/screenshots.png)
+WIP
 
 ## Features
 
