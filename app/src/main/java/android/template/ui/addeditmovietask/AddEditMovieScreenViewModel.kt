@@ -30,11 +30,6 @@ class AddEditMovieScreenViewModel @Inject constructor(
     var rating by mutableIntStateOf(0)
         private set
 
-
-//    private val shouldEnableSave: StateFlow<Boolean> = name. name.map {
-//        it.isNotBlank()
-//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
     init {
         if (movieId != null && movieId != -1) {
             // user wants to edit the movie, fetch it's details
